@@ -128,7 +128,7 @@ nav {
     padding: 15px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-rows: repeat(auto-fill, 160px);
     grid-gap: 20px;
 }
 
@@ -198,10 +198,12 @@ nav {
 }
 
 .closer {
-    padding: 5px;
+    padding: 6px 9px;
+    box-shadow: 0 0 3px;
     font-size: 12px;
-    border-radius: 20px;
+    border-radius: 50%;
     background: red;
+    text-transform: uppercase;
     position: absolute;
     top: 3px;
     right: 3px;
@@ -257,12 +259,73 @@ nav {
     border: 1px solid rgb(0, 248, 91);
 }
 
-.ModalCloser {
+.ModalCloser,
+.closeProgress,
+.OptionCloser {
     position: absolute;
+    text-transform: uppercase;
     top: 5px;
     right: 5px;
     background-color: red;
-    border-radius: 5px;
-    padding: 8px;
+    box-shadow: 0 0 5px;
+    border-radius: 50%;
+    padding: 8px 11px;
     cursor: pointer;
+}
+
+.uploadProgressDiv {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 15px;
+    background: rgba(255, 254, 254, 0.9);
+    box-shadow: 0 0 40px black, 0 0 40px black;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.uploadProgressDiv * {
+    margin: 5px;
+}
+
+.filename {
+    font-weight: bolder;
+}
+
+.fileOptionMenuIcon span {
+    border-radius: 2px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 3px 2px;
+    padding: 3px 8px;
+    background: rgb(221, 221, 221);
+    border-radius: 5px;
+    line-height: 1.5;
+}
+
+.fileOptionMenuIcon span:hover {
+    background: #fff;
+}
+
+.fileOptionModel {
+    display: none;
+    padding: 5px;
+}
+
+.fileOptionModel a {
+    border-bottom: 1px solid lightgray;
+    display: block;
+    margin-bottom: 8px;
+    padding: 5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #000;
+    min-width: 250px;
+    border-radius: 3px;
+    background-image: linear-gradient(white, rgb(255, 255, 255));
+}
+
+.fileOptionModel a:hover {
+    background-image: linear-gradient(white, rgb(217, 214, 214));
 }

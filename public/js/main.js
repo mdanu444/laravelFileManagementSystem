@@ -45,3 +45,17 @@ fileUploader.onclick = () => {
 folderCreator.onclick = () => {
     closer(folderModal);
 }
+
+let fileOptionMenu = document.querySelector(".fileOptionMenuIcon span");
+let fileOptionModel = document.querySelector(".fileOptionModel");
+let OptionCloser = document.querySelector(".OptionCloser");
+fileOptionMenu.onclick = (e) => {
+    e.preventDefault();
+    let fileId = e.target.getAttribute("fileid");
+    shower(fileOptionModel)
+
+}
+
+OptionCloser.onclick = () => {
+    closer(fileOptionModel)
+}

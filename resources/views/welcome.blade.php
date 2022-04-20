@@ -52,183 +52,18 @@
             <div class="content">
                 <a href="{{ url('') }}">
                     <div class="file">
+                        <div class="fileOption">
+                            <div class="fileOptionMenuIcon" >
+                                <span fileid="10"><i class="fa fa-ellipsis-v"></i></span>
+                            </div>
+                            <div class="options"></div>
+                        </div>
                         <img src="{{ asset('images/file.png') }}" alt="">
                         <div class="fileDescription">
                         <p class="filename">File Name</p>
                         <p class="filename">Last Edited 01/01/2013</p>
                         </div>
                     </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/png.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/jpg.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/pdf.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/xlsx.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/doc.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/other.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/png.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/jpg.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/pdf.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/xlsx.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/doc.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/other.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
-                </a>
-                <a href="{{ url('') }}">
-                <div class="file">
-                    <img src="{{ asset('images/file.png') }}" alt="">
-                    <div class="fileDescription">
-                    <p class="filename">File Name</p>
-                    <p class="filename">Last Edited 01/01/2013</p>
-                    </div>
-                </div>
                 </a>
             </div>
         </div>
@@ -252,6 +87,29 @@
     <input class="folderCreator" type="submit" value="Create">
     <div class="ModalCloser FolderModelCloser">x</div>
 </div>
+</div>
+
+
+
+
+{{--  modal file options  --}}
+<div class="modal fileOptionModel">
+    <div class="modalBody">
+        <div class="OptionCloser">x</div>
+        <a href="#">Download</a>
+        <a href="#">Rename</a>
+        <a href="#">Delete</a>
+    </div>
+</div>
+
+
+
+
+<div class="uploadProgressDiv">
+    {{--  <div class="closeProgress">x</div>  --}}
+<div class="filename">untitled1.jpg</div>
+<progress id="progressbar" value="10" max="100" style="width: 300px; height: 20px;"></progress>
+<div class="progressDetails">0% Upploaded. Please wait...</div>
 </div>
 
 <script src="{{ asset('js/main.js') }}"></script>
