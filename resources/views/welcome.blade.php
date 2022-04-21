@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>File Manager</title>
+
 
     {{--  external  --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -75,8 +77,10 @@
 {{--  modal upload new file/files  --}}
 <div class="modal fileModal">
     <div class="modalBody">
-        <input type="file">
-        <input class="fileUploader" type="submit" value="Upload">
+        <form action="" method="post" enctype="multipart/form-data">
+            <input type="file" name="files[]" multiple>
+            <input class="fileUploader" type="submit" value="Upload">
+        </form>
     <div class="ModalCloser fileModelCloser">x</div>
     </div>
 </div>
@@ -102,14 +106,11 @@
     </div>
 </div>
 
-
-
-
 <div class="uploadProgressDiv">
     {{--  <div class="closeProgress">x</div>  --}}
-<div class="filename">untitled1.jpg</div>
-<progress id="progressbar" value="10" max="100" style="width: 300px; height: 20px;"></progress>
-<div class="progressDetails">0% Upploaded. Please wait...</div>
+    <progress id="progressbar" value="10" max="100" style="width: 300px; height: 20px;"></progress>
+    <div class="progressDetails">
+    </div>
 </div>
 
 <script src="{{ asset('js/main.js') }}"></script>

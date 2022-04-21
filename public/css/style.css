@@ -282,6 +282,7 @@ nav {
     box-shadow: 0 0 40px black, 0 0 40px black;
     border-radius: 5px;
     font-size: 18px;
+    display: none;
 }
 
 .uploadProgressDiv * {
