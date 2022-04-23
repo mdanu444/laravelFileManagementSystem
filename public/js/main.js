@@ -160,7 +160,7 @@ let content = document.querySelector(".content");
 
 // load files and folder
 function loadFilesAndFolder() {
-    content.innerHTML = "";
+    content.innerHTML = "Loading...";
     let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
     let files;
     fetch(url + "getfiles", {
@@ -169,13 +169,15 @@ function loadFilesAndFolder() {
         }
     }).then(res => res.json()).then(data => {
         files = data;
+        content.innerHTML = "";
         for (let file in files) {
 
             content.innerHTML += (`
         <div fullPath="${files[file].fullPath}" class="file" directoryId = "${files[file].id}" type="${files[file].type}">
-            <div class="fileOption">
+
+        <div class="fileOption">
                 <div class="fileOptionMenuIcon" >
-                    <span fileid="10"><i class="fa fa-ellipsis-v"></i></span>
+                    <span class="AllfileOption"><i class="fa fa-ellipsis-v"></i></span>
                 </div>
                 <div class="options"></div>
             </div>
@@ -184,13 +186,14 @@ function loadFilesAndFolder() {
             <p class="filename">${files[file].fullname}</p>
 
             </div>
+            ${files[file].importants == 1 ? "<div title='Important File' class='important'>i</div>" : ""}
         </div>
 `)
 
             // set current directoryId
             let LoadedFiles = document.querySelectorAll(".file")
             for (let file of LoadedFiles) {
-                file.onclick = (e) => {
+                file.children[0].onclick = (e) => {
                     e.stopPropagation();
                     handleFileFolderClickEvent(file)
                 }
@@ -203,9 +206,12 @@ function loadFilesAndFolder() {
 loadFilesAndFolder();
 
 function handleFileFolderClickEvent(file) {
+
     if (file.getAttribute("type") == "folder") {
+        Options.innerHTML = "Loading...";
         handlefolderOptions(file)
     } else {
+        Options.innerHTML = "Loading..."
         fileOptionMenu(file)
     }
 }
@@ -226,8 +232,8 @@ fileOptionMenu = (file) => {
     let filepath = file.getAttribute("fullpath");
     Options.innerHTML = (
         `
-        <a target="_blank" onclick="fileOpenHandler(this)" href="${url+ "storage/" +file.getAttribute("fullpath")}">Open</a>
-        <a onclick="closeFileOptionModel()" download href="${url+"storage/"+file.getAttribute("fullpath")}">Download</a>
+        <a target="_blank" onclick="fileOpenHandler(event, this)" href="${url+ "storage/" +file.getAttribute("fullpath")}">Open</a>
+        <a target="_blank" onclick="closeFileOptionModel()" download href="${url+"storage/"+file.getAttribute("fullpath")}">Download</a>
         <a onclick="fileDeleteHandler(event, this)" filepath="${filepath}" href="${url+ "deleteFile"}">Delete</a>
 
         `
@@ -235,8 +241,8 @@ fileOptionMenu = (file) => {
     shower(fileOptionModel)
 }
 
-let fileOpenHandler = (option) => {
-    console.log(option);
+let fileOpenHandler = (e, option) => {
+    closer(fileOptionModel);
 }
 
 let fileDeleteHandler = (event, option) => {
@@ -252,7 +258,7 @@ let fileDeleteHandler = (event, option) => {
 
         }).then(res => res.json())
         .then(data => {
-            console.log(data);
+
             loadFilesAndFolder()
             closer(fileOptionModel)
         })
@@ -261,5 +267,8 @@ let fileMoveHandler = (event, option) => {
     event.preventDefault();
     console.log("Move", option);
     closer(fileOptionModel)
-
+}
+let closeFileOptionModel = (event, option) => {
+    // event.preventDefault();
+    closer(fileOptionModel)
 }

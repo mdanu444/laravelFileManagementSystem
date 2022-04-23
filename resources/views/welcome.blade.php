@@ -42,12 +42,8 @@
                 <div class="addFolder">New Folder</div>
             </div>
     </div>
-        <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
-        <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
-        <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
-        <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
-        <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
-        <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
+        <div class="rootfolders importants"><i class="fa fa-arrow-right"></i> Importants</div>
+        <div class="rootfolders trushed"><i class="fa fa-arrow-right"></i> Trushed</div>
     </div>
         <div class="container">
             <h1 class="filesHeading">
@@ -73,8 +69,6 @@
         </div>
     </saction>
 </header>
-
-
 
 {{--  modal upload new file/files  --}}
 <div class="modal fileModal">
