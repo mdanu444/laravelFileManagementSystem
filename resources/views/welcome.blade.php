@@ -13,7 +13,7 @@
 
 
     {{--  internal  --}}
-    <link rel="shortcut icon" href="{{ asset('images/file.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('images/folder.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
@@ -21,7 +21,7 @@
     <nav>
         <a href="{{ url('') }}">
             <div class="logo">
-                <img src="{{ asset('images/file.png') }}" alt="">
+                <img src="{{ asset('images/folder.png') }}" alt="">
                 <h3>File Manager</h3>
              </div>
         </a>
@@ -50,7 +50,9 @@
         <div class="rootfolders"><i class="fa fa-arrow-right"></i> Root Folder 1</div>
     </div>
         <div class="container">
-            <h1 class="filesHeading">Drive</h1>
+            <h1 class="filesHeading">
+                <span dirname="drive" dirid="">Drive/</span>
+            </h1>
             <div class="content">
                 <a href="{{ url('') }}">
                     <div class="file">
@@ -60,7 +62,7 @@
                             </div>
                             <div class="options"></div>
                         </div>
-                        <img src="{{ asset('images/file.png') }}" alt="">
+                        <img src="{{ asset('images/folder.png') }}" alt="">
                         <div class="fileDescription">
                         <p class="filename">File Name</p>
                         <p class="filename">Last Edited 01/01/2013</p>
@@ -87,8 +89,10 @@
 {{--  modal create folder  --}}
 <div class="modal folderModal">
     <div class="modalBody">
-    <input type="text" placeholder="Filder Name">
-    <input class="folderCreator" type="submit" value="Create">
+        <form action="" class="folderCreateForm">
+            <input type="text" name="folderName" class="folderNameInput" placeholder="Filder Name">
+            <input class="folderCreator" type="submit" value="Create">
+        </form>
     <div class="ModalCloser FolderModelCloser">x</div>
 </div>
 </div>
@@ -100,9 +104,8 @@
 <div class="modal fileOptionModel">
     <div class="modalBody">
         <div class="OptionCloser">x</div>
-        <a href="#">Download</a>
-        <a href="#">Rename</a>
-        <a href="#">Delete</a>
+        <div class="Options">
+        </div>
     </div>
 </div>
 

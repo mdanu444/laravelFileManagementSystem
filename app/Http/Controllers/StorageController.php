@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Directory;
 use App\Models\MyStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,9 +13,9 @@ class StorageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getfiles()
     {
-        //
+        return MyStorage::all()->sortByDesc("id");
     }
 
     /**
@@ -22,9 +23,38 @@ class StorageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function deleteFile(Request $request)
     {
-        //
+        if (MyStorage::where("fullPath", $request->filepath)->delete()) {
+            return ["message"=> "file deleted successfully!"];
+        };
+        return ["message"=> "something error"];
+    }
+
+
+
+
+
+
+    // create folder
+    public function createFolder(Request $request)
+    {
+        if ($request->folderName !="") {
+        $dir = Directory::create(["dirName" => $request->currentDir.$request->folderName]);
+        $data = [
+            "fullname" => $request->folderName,
+            "extension" => "folder",
+            "type" => "folder",
+            "size" => "0",
+            "dir_id" => $dir->id,
+            "fullPath" => $dir->dirName,
+        ];
+        MyStorage::create($data);
+        return "Folder Created Successfully";
+    }
+        else{
+            return "Folder name must not be empty!";
+        }
     }
 
     /**
@@ -57,7 +87,7 @@ class StorageController extends Controller
                         "type" => "file",
                         "size" => $value->getSize(),
                         "dir_id" => 1,
-                        "fullPath" => $fullPath,
+                        "fullPath" => $fullPath.$value->getClientOriginalName(),
                     ];
                     MyStorage::create($data);
                     $value->storeAs($fullPath, $value->getClientOriginalName(), "public");

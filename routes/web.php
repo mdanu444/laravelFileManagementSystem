@@ -19,3 +19,6 @@ Route::get('/', function () {
 });
 
 Route::resource("/fileUpload", StorageController::class);
+Route::post("/createFolder", [StorageController::class, "createfolder"])->name("createFolder");
+Route::get("/getfiles", [StorageController::class, "getfiles"])->name("getfiles");
+Route::post("/deleteFile", [StorageController::class, "deleteFile"])->name("deleteFile");
