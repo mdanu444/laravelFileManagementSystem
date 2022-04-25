@@ -15,7 +15,7 @@ class StorageController extends Controller
      */
     public function getfiles()
     {
-        return MyStorage::all()->sortByDesc("id");
+        return MyStorage::all()->where("dir_id" , 0)->sortByDesc("id");
     }
 
     /**
@@ -40,15 +40,16 @@ class StorageController extends Controller
     public function createFolder(Request $request)
     {
         if ($request->folderName !="") {
-        $dir = Directory::create(["dirName" => $request->currentDir.$request->folderName]);
+        $fullPath = Directory::create(["dirName" => $request->currentDir.$request->folderName]);
         $data = [
             "fullname" => $request->folderName,
             "extension" => "folder",
             "type" => "folder",
             "size" => "0",
-            "dir_id" => $dir->id,
-            "fullPath" => $dir->dirName,
+            "dir_id" => $request->currentId,
+            "fullPath" => $request->currentDir.$request->folderName."/",
         ];
+
         MyStorage::create($data);
         return "Folder Created Successfully";
     }
@@ -57,25 +58,7 @@ class StorageController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-
-    // [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] =>
-    // [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 1 (1).pdf
-    // [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => application/pdf
-    // [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
-    // [hashName:protected] =>
-    // [pathName:SplFileInfo:private] => C:\xampp\tmp\phpFC58.tmp
-    // [fileName:SplFileInfo:private] => phpFC58.tmp
-
-
     public function store(Request $request)
-
-
     {
         $fullPath = $request->currentDir;
         if ($request->hasFile("files")) {
@@ -86,7 +69,7 @@ class StorageController extends Controller
                         "extension" => strtolower($value->getClientOriginalExtension()),
                         "type" => "file",
                         "size" => $value->getSize(),
-                        "dir_id" => 1,
+                        "dir_id" => $request->currentId,
                         "fullPath" => $fullPath.$value->getClientOriginalName(),
                     ];
                     MyStorage::create($data);
@@ -106,9 +89,32 @@ class StorageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function importantFile($id)
     {
-        //
+        $data = MyStorage::find($id);
+        $data->importants = 1;
+        $data->save();
+        return $data;
+    }
+    public function normalizeFile($id)
+    {
+        $data = MyStorage::find($id);
+        $data->importants = "";
+        $data->save();
+        return $data;
+    }
+    public function getfolderInfo($folder)
+    {
+        $data = MyStorage::where("fullname", $folder)->get();
+        return $data;
+    }
+    public function getFolderData($id)
+    {
+        $data = MyStorage::where("dir_id", $id)->get();
+        if ($data) {
+            return $data;
+        }
+        return ["message" => "Data not found"];
     }
 
     /**

@@ -19,8 +19,9 @@ class CreateStoragesTable extends Migration
             $table->string("extension");
             $table->string("type");
             $table->string("size");
-            $table->string("dir_id");
+            $table->string("dir_id")->default(0);
             $table->string("fullPath");
+            $table->string("importants")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

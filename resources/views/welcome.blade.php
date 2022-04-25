@@ -47,8 +47,7 @@
     </div>
         <div class="container">
             <h1 class="filesHeading">
-                <span dirname="drive" dirid="">Drive/</span>
-            </h1>
+                <span dirname="drive" dirid="">Drive/</span></h1>
             <div class="content">
                 <a href="{{ url('') }}">
                     <div class="file">

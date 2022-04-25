@@ -12,10 +12,8 @@ let folderCreator = document.querySelector(".folderCreator");
 let filesHeading = document.querySelector(".filesHeading");
 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 let url = "http://localhost:8000/";
-let currentDir = "Drive/"
-let currentDirId = null;
-let prveiousDri = "";
-let nextDir = "";
+let root = "Drive/"
+let rootId = 0;
 addbtn.onclick = () => {
     shower(addDecisitionSection);
 }
@@ -78,10 +76,11 @@ fileUploader.onclick = (e) => {
     progressDetails.innerHTML = ""
     let form = fileModal.children[0].children[0];
     let formData = new FormData(form);
-    formData.append("currentDir", currentDir);
+    formData.append("currentDir", root.replace(/^\/+|\/+$/g, ""));
+    formData.append("currentId", rootId);
+    // console.log(rootId);
     closer(fileModal);
     let ajax = new XMLHttpRequest();
-
     ajax.upload.addEventListener('progress', updateProgress, false);
     uploadProgressDiv.style.display = "block"
     ajax.addEventListener('load', transferComplete, false);
@@ -90,7 +89,7 @@ fileUploader.onclick = (e) => {
 
     ajax.onreadystatechange = function() {
         if (ajax.readyState == XMLHttpRequest.DONE) {
-            console.log(ajax.response);
+            // console.log(ajax.response);
         }
     }
 
@@ -117,16 +116,16 @@ function updateProgress(e) {
 
 function transferComplete(e) {
     uploadProgressDiv.style.backgroundColor = "lightgreen"
-    loadFilesAndFolder()
+    fetchFolderData(rootId)
     progressDetails.innerHTML = "File Uploaded Successfull!"
 }
 
 function transferFailed(e) {
-    console.log(e);
+    // console.log(e);
 }
 
 function transferCanceled(e) {
-    console.log(e);
+    // console.log(e);
 }
 
 // folder create section
@@ -135,13 +134,18 @@ let folderNameInput = document.querySelector(".folderNameInput");
 folderCreator.onclick = (e) => {
     e.preventDefault()
     let forlderName = folderNameInput.value;
+
     if (forlderName != "") {
         let ajax = new XMLHttpRequest();
         let formData = new FormData(folderCreateForm);
-        formData.append("currentDir", currentDir);
+        formData.append("currentDir", root);
+        formData.append("currentId", rootId);
+        // console.log(root + forlderName + "/");
+        // console.log(rootId);
         ajax.onreadystatechange = function() {
             if (ajax.readyState == XMLHttpRequest.DONE) {
-                loadFilesAndFolder()
+                fetchFolderData()
+                    // console.log(ajax.response);
             }
         }
 
@@ -155,24 +159,73 @@ folderCreator.onclick = (e) => {
     }
 }
 
-
 let content = document.querySelector(".content");
 
-// load files and folder
-function loadFilesAndFolder() {
-    content.innerHTML = "Loading...";
-    let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
-    let files;
-    fetch(url + "getfiles", {
+let fetchFolderData = () => {
+    // console.log(rootId);
+    fetch(url + "getFolderData/" + rootId, {
+        method: "get",
         headers: {
             'X-CSRF-TOKEN': csrfToken
+        },
+    }).then(res => res.json()).then(folderInnerData => {
+        // console.log(folderInnerData);
+        if (folderInnerData && folderInnerData.length && folderInnerData.length > 0) {
+            loadFilesAndFolder(folderInnerData)
+            handDirectoriesLinks()
+        } else {
+            content.innerHTML = "Folder Empty!"
         }
-    }).then(res => res.json()).then(data => {
-        files = data;
-        content.innerHTML = "";
-        for (let file in files) {
 
+    })
+}
+
+// load files and folder
+function loadFilesAndFolder(dirDatadata) {
+
+    if (dirDatadata && dirDatadata.length > 0) {
+        content.innerHTML = "";
+        let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
+        for (let file of dirDatadata) {
             content.innerHTML += (`
+            <div fullPath="${file.fullPath}" class="file" directoryId = "${file.id}" type="${file.type}">
+            <div class="fileOption">
+                    <div class="fileOptionMenuIcon" >
+                        <span class="AllfileOption"><i class="fa fa-ellipsis-v"></i></span>
+                    </div>
+                    <div class="options"></div>
+                </div>
+                <img src="${url + extensions.indexOf(file.extension) ? "images/" +file.extension : 'images/other' }.png" alt="">
+                <div class="fileDescription">
+                <p class="filename">${file.fullname}</p>
+                </div>
+                ${file.importants == 1 ? "<div title='Important File' class='important'>i</div>" : ""}
+            </div>
+    `)
+
+            // set current directoryId
+            let LoadedFiles = document.querySelectorAll(".file")
+            for (let file of LoadedFiles) {
+                file.children[0].onclick = (e) => {
+                    e.stopPropagation();
+                    handleFileFolderClickEvent(file)
+                }
+            }
+        }
+    } else {
+        content.innerHTML = "Loading...";
+        let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
+        let files;
+        fetch(url + "getfiles", {
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        }).then(res => res.json()).then(data => {
+            files = data;
+            content.innerHTML = "";
+            for (let file in files) {
+
+                content.innerHTML += (`
         <div fullPath="${files[file].fullPath}" class="file" directoryId = "${files[file].id}" type="${files[file].type}">
 
         <div class="fileOption">
@@ -190,19 +243,19 @@ function loadFilesAndFolder() {
         </div>
 `)
 
-            // set current directoryId
-            let LoadedFiles = document.querySelectorAll(".file")
-            for (let file of LoadedFiles) {
-                file.children[0].onclick = (e) => {
-                    e.stopPropagation();
-                    handleFileFolderClickEvent(file)
+                // set current directoryId
+                let LoadedFiles = document.querySelectorAll(".file")
+                for (let file of LoadedFiles) {
+                    file.children[0].onclick = (e) => {
+                        e.stopPropagation();
+                        handleFileFolderClickEvent(file)
+                    }
                 }
             }
-        }
-    })
+        })
+    }
 
 }
-
 loadFilesAndFolder();
 
 function handleFileFolderClickEvent(file) {
@@ -215,36 +268,48 @@ function handleFileFolderClickEvent(file) {
         fileOptionMenu(file)
     }
 }
-
 let Options = document.querySelector(".Options");
 
 function handlefolderOptions(file) {
+    // console.log(file);
+    let filepath = file.getAttribute("fullpath");
     shower(fileOptionModel)
-    currentDirId = file.getAttribute("directoryid");
-    foldername = file.getAttribute("type");
-    prveiousDri = currentDir;
-    currentDir = currentDir + foldername + "/"
+    Options.innerHTML = (
+            `
+        <a fullpath="${file.getAttribute("fullpath")}" directoryid="${file.getAttribute("directoryid")}" onclick="FolderOpenHandler(event, this)" href="${url+ "storage/" +file.getAttribute("fullpath")}">Open</a>
+        <a target="_blank" onclick="closeFileOptionModel()" download href="${url+"storage/"+file.getAttribute("fullpath")}">Download</a>
+        <a onclick="fileDeleteHandler(event, this)" filepath="${filepath}" href="${url+ "deleteFile"}">Delete</a>
+        ${file.children[3] && file.children[3].getAttribute("class") == "important" ? `<a onclick="normalizeFileHandler(event, this)" filepath="${filepath}" href="${url+ "normalizeFile/"+file.getAttribute("directoryid")}">Normalize</a>`: `<a onclick="fileImportantHandler(event, this)" filepath="${filepath}" href="${url+ "importantFile/"+file.getAttribute("directoryid")}">Important</a>`}
+        `
+        )
         // <span dirname="drive" dirid="">Drive/</span>
 }
-
-
 fileOptionMenu = (file) => {
-    let filepath = file.getAttribute("fullpath");
-    Options.innerHTML = (
-        `
+        let filepath = file.getAttribute("fullpath");
+        Options.innerHTML = (
+                `
         <a target="_blank" onclick="fileOpenHandler(event, this)" href="${url+ "storage/" +file.getAttribute("fullpath")}">Open</a>
         <a target="_blank" onclick="closeFileOptionModel()" download href="${url+"storage/"+file.getAttribute("fullpath")}">Download</a>
         <a onclick="fileDeleteHandler(event, this)" filepath="${filepath}" href="${url+ "deleteFile"}">Delete</a>
-
+        ${file.children[3] && file.children[3].getAttribute("class") == "important" ? `<a onclick="normalizeFileHandler(event, this)" filepath="${filepath}" href="${url+ "normalizeFile/"+file.getAttribute("directoryid")}">Normalize</a>`: `<a onclick="fileImportantHandler(event, this)" filepath="${filepath}" href="${url+ "importantFile/"+file.getAttribute("directoryid")}">Important</a>`}
         `
     )
     shower(fileOptionModel)
 }
-
 let fileOpenHandler = (e, option) => {
     closer(fileOptionModel);
 }
-
+let FolderOpenHandler = (e, option) => {
+    e.preventDefault();
+    // console.log(option);
+    closer(fileOptionModel);
+    // console.log(option);
+    let fullpath = option.getAttribute("fullpath")
+    rootId = option.getAttribute("directoryid");
+    root = fullpath.replace(/^\/+|\/+$/g, "")+"/";
+    // console.log(rootId);
+    HeaderPathHandler(fullpath)
+}
 let fileDeleteHandler = (event, option) => {
     event.preventDefault();
     let formData = new FormData();
@@ -265,10 +330,106 @@ let fileDeleteHandler = (event, option) => {
 }
 let fileMoveHandler = (event, option) => {
     event.preventDefault();
-    console.log("Move", option);
     closer(fileOptionModel)
 }
 let closeFileOptionModel = (event, option) => {
     // event.preventDefault();
     closer(fileOptionModel)
+}
+let fileImportantHandler = (event, option) => {
+    event.preventDefault();
+    fetch(option.getAttribute("href"), {
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        method: "put"
+    }).then(res => res.json()).then(data => {
+        // console.log(data)
+        loadFilesAndFolder();
+        closer(fileOptionModel)
+    })
+}
+let normalizeFileHandler = (event, option) => {
+    event.preventDefault();
+    fetch(option.getAttribute("href"), {
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        method: "put"
+    }).then(res => res.json()).then(data => {
+        // console.log(data)
+        loadFilesAndFolder();
+        closer(fileOptionModel)
+    })
+}
+function handDirectoriesLinks(){
+    let folders = filesHeading.children;
+    for(let element of folders){
+        if (element) {
+            element.onclick = ()=>{
+                let elementId = element.getAttribute("thisdirid")
+                console.log(element);
+                if (elementId && elementId > 0) {
+                    rootId = elementId;
+                    root = element.getAttribute("fullpath").replace(/^\/+|\/+$/g, "")+"/";
+                    HeaderPathHandler()
+                    fetchFolderData(rootId)
+                    // console.log(elementId);
+                }else{
+                    loadFilesAndFolder()
+                    filesHeading.innerHTML = `<span dirname="drive" dirid="">Drive/</span>`
+                }
+            }
+        }else{
+            loadFilesAndFolder()
+            filesHeading.innerHTML = `<span dirname="drive" dirid="">Drive/</span></h1>`
+        }
+    };
+}
+handDirectoriesLinks()
+
+let HeaderPathHandler = async () => {
+    // console.log(root);
+    filesHeading.innerHTML = `<span dirname="drive" dirid="">Drive/</span>`
+    // console.log(fullpath);
+    let myroot = root.replace("//","/");
+     myroot = myroot.replace(/^\/+|\/+$/g,"");
+    // console.log(myroot);
+    let pathArray = myroot.split("/");
+    let spans = [];
+    pathArray.forEach(element => {
+        console.log(element);
+
+        fetch(url+"getfolderInfo/"+element, {
+            method:"get",
+            headers:{
+                'X-CSRF-TOKEN': csrfToken
+            },
+        }).then(res => res.json()).then(data =>{
+            // console.log(data);
+            if (data[0] && data[0].id) {
+                    data.forEach(folderData => {
+                    // console.log("folderData", folderData);
+                    let span = document.createElement("span")
+                    span.setAttribute("fullname", folderData.fullname);
+                    span.setAttribute("fullpath", folderData.fullPath);
+                    span.setAttribute("folder_dir_id", folderData.dir_id);
+                    span.setAttribute("thisdirid", folderData.id);
+                    span.setAttribute("type", folderData.type);
+                    span.innerHTML=folderData.fullname+"/"
+                    root += folderData.fullname+"/"
+                    rootId = folderData.id
+
+                    spans.push(span);
+
+                });
+            }
+
+        });
+
+    });
+            console.log(spans);
+             filesHeading.append(spans.join(""))
+            fetchFolderData(rootId)
+
 }
