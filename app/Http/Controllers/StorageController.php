@@ -6,6 +6,8 @@ use App\Models\Directory;
 use App\Models\MyStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
 class StorageController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class StorageController extends Controller
      */
     public function getfiles()
     {
-        return MyStorage::all()->where("dir_id" , 0)->sortByDesc("id");
+        return MyStorage::all()->where("dir_id", 0)->sortByDesc("id");
     }
 
     /**
@@ -26,9 +28,9 @@ class StorageController extends Controller
     public function deleteFile(Request $request)
     {
         if (MyStorage::where("fullPath", $request->filepath)->delete()) {
-            return ["message"=> "file deleted successfully!"];
+            return ["message" => "file deleted successfully!"];
         };
-        return ["message"=> "something error"];
+        return ["message" => "something error"];
     }
 
 
@@ -39,22 +41,28 @@ class StorageController extends Controller
     // create folder
     public function createFolder(Request $request)
     {
-        if ($request->folderName !="") {
-        $fullPath = Directory::create(["dirName" => $request->currentDir.$request->folderName]);
-        $data = [
-            "fullname" => $request->folderName,
-            "extension" => "folder",
-            "type" => "folder",
-            "size" => "0",
-            "dir_id" => $request->currentId,
-            "fullPath" => $request->currentDir.$request->folderName."/",
-        ];
+        $validator = Validator::make($request->all(), [
+            "fullname" => "unique:storages,fullname|required"
+        ], [
+            'required' => 'The Folder Name field is required.',
+            'unique' => 'The Folder Name must be unique.',
+        ]);
+        if (!$validator->fails()) {
+            if ($request->fullname != "")
+                Directory::create(["dirName" => $request->currentDir . $request->fullname]);
+            $data = [
+                "fullname" => $request->fullname,
+                "extension" => "folder",
+                "type" => "folder",
+                "size" => "0",
+                "dir_id" => $request->currentId,
+                "fullPath" => $request->currentDir . $request->fullname . "/",
+            ];
 
-        MyStorage::create($data);
-        return "Folder Created Successfully";
-    }
-        else{
-            return "Folder name must not be empty!";
+            MyStorage::create($data);
+            return ["message"=> "Folder Created Successfully"];
+        } else {
+            return ["error" => $validator->messages()];
         }
     }
 
@@ -62,7 +70,7 @@ class StorageController extends Controller
     {
         $fullPath = $request->currentDir;
         if ($request->hasFile("files")) {
-            foreach($request->allFiles("files") as $file){
+            foreach ($request->allFiles("files") as $file) {
                 foreach ($file as $value) {
                     $data = [
                         "fullname" => $value->getClientOriginalName(),
@@ -70,13 +78,13 @@ class StorageController extends Controller
                         "type" => "file",
                         "size" => $value->getSize(),
                         "dir_id" => $request->currentId,
-                        "fullPath" => $fullPath.$value->getClientOriginalName(),
+                        "fullPath" => $fullPath . $value->getClientOriginalName(),
                     ];
                     MyStorage::create($data);
                     $value->storeAs($fullPath, $value->getClientOriginalName(), "public");
                 }
             };
-        }else{
+        } else {
             return "No file found";
         }
 

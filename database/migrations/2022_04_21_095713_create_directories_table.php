@@ -15,7 +15,7 @@ class CreateDirectoriesTable extends Migration
     {
         Schema::create('directories', function (Blueprint $table) {
             $table->id();
-            $table->string("dirName");
+            $table->string("dirName")->unique();
             $table->timestamps();
             $table->softDeletes();
         });

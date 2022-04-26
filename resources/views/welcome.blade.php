@@ -83,7 +83,7 @@
 <div class="modal folderModal">
     <div class="modalBody">
         <form action="" class="folderCreateForm">
-            <input type="text" name="folderName" class="folderNameInput" placeholder="Filder Name">
+            <input type="text" name="fullname" class="folderNameInput" placeholder="Filder Name">
             <input class="folderCreator" type="submit" value="Create">
         </form>
     <div class="ModalCloser FolderModelCloser">x</div>

@@ -76,9 +76,9 @@ fileUploader.onclick = (e) => {
     progressDetails.innerHTML = ""
     let form = fileModal.children[0].children[0];
     let formData = new FormData(form);
-    formData.append("currentDir", root.replace(/^\/+|\/+$/g, ""));
+    formData.append("currentDir", root.replace(/^\/+|\/+$/g, "") + "/");
     formData.append("currentId", rootId);
-    // console.log(rootId);
+    // // console.log(rootId);
     closer(fileModal);
     let ajax = new XMLHttpRequest();
     ajax.upload.addEventListener('progress', updateProgress, false);
@@ -89,7 +89,7 @@ fileUploader.onclick = (e) => {
 
     ajax.onreadystatechange = function() {
         if (ajax.readyState == XMLHttpRequest.DONE) {
-            // console.log(ajax.response);
+            // // console.log(ajax.response);
         }
     }
 
@@ -121,11 +121,11 @@ function transferComplete(e) {
 }
 
 function transferFailed(e) {
-    // console.log(e);
+    // // console.log(e);
 }
 
 function transferCanceled(e) {
-    // console.log(e);
+    // // console.log(e);
 }
 
 // folder create section
@@ -140,16 +140,24 @@ folderCreator.onclick = (e) => {
         let formData = new FormData(folderCreateForm);
         formData.append("currentDir", root);
         formData.append("currentId", rootId);
-        // console.log(root + forlderName + "/");
-        // console.log(rootId);
+        // // console.log(root + forlderName + "/");
+        // // console.log(rootId);
+
+
+        ajax.open("post", url + "createFolder");
         ajax.onreadystatechange = function() {
             if (ajax.readyState == XMLHttpRequest.DONE) {
-                fetchFolderData()
-                    // console.log(ajax.response);
+                let dataObject = JSON.parse(ajax.response);
+                if (dataObject.error) {
+                    alert(dataObject.error.fullname[0]);
+                    return;
+                } else {
+                    fetchFolderData()
+                }
             }
         }
 
-        ajax.open("post", url + "createFolder");
+
         ajax.setRequestHeader('X-CSRF-TOKEN', csrfToken)
         ajax.send(formData)
         folderCreateForm.reset();
@@ -162,14 +170,14 @@ folderCreator.onclick = (e) => {
 let content = document.querySelector(".content");
 
 let fetchFolderData = () => {
-    // console.log(rootId);
+    // // console.log(rootId);
     fetch(url + "getFolderData/" + rootId, {
         method: "get",
         headers: {
             'X-CSRF-TOKEN': csrfToken
         },
     }).then(res => res.json()).then(folderInnerData => {
-        // console.log(folderInnerData);
+        // // console.log(folderInnerData);
         if (folderInnerData && folderInnerData.length && folderInnerData.length > 0) {
             loadFilesAndFolder(folderInnerData)
             handDirectoriesLinks()
@@ -221,6 +229,11 @@ function loadFilesAndFolder(dirDatadata) {
                 'X-CSRF-TOKEN': csrfToken
             }
         }).then(res => res.json()).then(data => {
+            if (data.length == 0) {
+                console.log(data.length);
+                content.innerHTML = "Empty"
+                return
+            }
             files = data;
             content.innerHTML = "";
             for (let file in files) {
@@ -271,7 +284,7 @@ function handleFileFolderClickEvent(file) {
 let Options = document.querySelector(".Options");
 
 function handlefolderOptions(file) {
-    // console.log(file);
+    // // console.log(file);
     let filepath = file.getAttribute("fullpath");
     shower(fileOptionModel)
     Options.innerHTML = (
@@ -301,13 +314,13 @@ let fileOpenHandler = (e, option) => {
 }
 let FolderOpenHandler = (e, option) => {
     e.preventDefault();
-    // console.log(option);
+    // // console.log(option);
     closer(fileOptionModel);
-    // console.log(option);
+    // // console.log(option);
     let fullpath = option.getAttribute("fullpath")
     rootId = option.getAttribute("directoryid");
     root = fullpath.replace(/^\/+|\/+$/g, "")+"/";
-    // console.log(rootId);
+    // // console.log(rootId);
     HeaderPathHandler(fullpath)
 }
 let fileDeleteHandler = (event, option) => {
@@ -324,7 +337,7 @@ let fileDeleteHandler = (event, option) => {
         }).then(res => res.json())
         .then(data => {
 
-            loadFilesAndFolder()
+            fetchFolderData()
             closer(fileOptionModel)
         })
 }
@@ -344,8 +357,8 @@ let fileImportantHandler = (event, option) => {
         },
         method: "put"
     }).then(res => res.json()).then(data => {
-        // console.log(data)
-        loadFilesAndFolder();
+        // // console.log(data)
+        fetchFolderData()
         closer(fileOptionModel)
     })
 }
@@ -357,24 +370,28 @@ let normalizeFileHandler = (event, option) => {
         },
         method: "put"
     }).then(res => res.json()).then(data => {
-        // console.log(data)
-        loadFilesAndFolder();
+        // // console.log(data)
+        fetchFolderData();
         closer(fileOptionModel)
     })
 }
 function handDirectoriesLinks(){
+    // console.log(root);
     let folders = filesHeading.children;
+    // console.log(folders);
     for(let element of folders){
         if (element) {
             element.onclick = ()=>{
                 let elementId = element.getAttribute("thisdirid")
-                console.log(element);
+                // console.log(element);
+                root = element.getAttribute("fullpath")
+                // console.log(elementId);
                 if (elementId && elementId > 0) {
                     rootId = elementId;
                     root = element.getAttribute("fullpath").replace(/^\/+|\/+$/g, "")+"/";
                     HeaderPathHandler()
                     fetchFolderData(rootId)
-                    // console.log(elementId);
+                    // // console.log(elementId);
                 }else{
                     loadFilesAndFolder()
                     filesHeading.innerHTML = `<span dirname="drive" dirid="">Drive/</span>`
@@ -388,48 +405,46 @@ function handDirectoriesLinks(){
 }
 handDirectoriesLinks()
 
-let HeaderPathHandler = async () => {
-    // console.log(root);
-    filesHeading.innerHTML = `<span dirname="drive" dirid="">Drive/</span>`
-    // console.log(fullpath);
+let HeaderPathHandler = () => {
+    // console.log("called");
+    // // console.log(root);
+    // filesHeading.innerHTML = `<span dirname="drive" dirid="">Drive/</span>`
+    // // console.log(fullpath);
     let myroot = root.replace("//","/");
      myroot = myroot.replace(/^\/+|\/+$/g,"");
-    // console.log(myroot);
+    // // console.log(myroot);
     let pathArray = myroot.split("/");
-    let spans = [];
-    pathArray.forEach(element => {
-        console.log(element);
-
+    let spans = `<span dirname="drive" dirid="">Drive/</span>`;
+    pathArray.forEach((element, index)=>{
+        // // console.log(element);
+        root = "Drive/"
         fetch(url+"getfolderInfo/"+element, {
             method:"get",
             headers:{
                 'X-CSRF-TOKEN': csrfToken
             },
         }).then(res => res.json()).then(data =>{
-            // console.log(data);
+            // // console.log(data);
             if (data[0] && data[0].id) {
-                    data.forEach(folderData => {
-                    // console.log("folderData", folderData);
-                    let span = document.createElement("span")
-                    span.setAttribute("fullname", folderData.fullname);
-                    span.setAttribute("fullpath", folderData.fullPath);
-                    span.setAttribute("folder_dir_id", folderData.dir_id);
-                    span.setAttribute("thisdirid", folderData.id);
-                    span.setAttribute("type", folderData.type);
-                    span.innerHTML=folderData.fullname+"/"
-                    root += folderData.fullname+"/"
+//                // // console.log(data);
+
+                    data.forEach((folderData) =>  {
+                    root = folderData.fullPath+"/"
                     rootId = folderData.id
-
-                    spans.push(span);
-
+                    spans+=`<span fullname="${folderData.fullname}" fullpath="${folderData.fullPath}" folder_dir_id="${folderData.dir_id}" thisdirid="${folderData.id}" type="${folderData.type}">${folderData.fullname}/</span>`
+                    if (index == pathArray.length-1) {
+                        filesHeading.innerHTML = spans
+                        fetchFolderData(rootId)
+                        handDirectoriesLinks()
+                    }
                 });
             }
 
-        });
+        }
 
+        );
+        // // console.log("call ended");
     });
-            console.log(spans);
-             filesHeading.append(spans.join(""))
-            fetchFolderData(rootId)
+
 
 }
