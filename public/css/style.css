@@ -105,8 +105,7 @@ nav {
 }
 
 .rootfolders {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
     cursor: pointer;
 }
 
@@ -340,6 +339,7 @@ nav {
 .importants,
 .trushed {
     cursor: pointer;
+    padding: 8px;
 }
 
 .active {
