@@ -302,7 +302,6 @@ function handlefolderOptions(file) {
 let fileDeleteForeverHandler = (e, option) =>{
     e.preventDefault()
     let formData = new FormData();
-    // console.log(option);
     id = option.getAttribute("thisid")
     formData.append("id", id)
     OptionCloser.click()
@@ -313,14 +312,12 @@ let fileDeleteForeverHandler = (e, option) =>{
         },
         body: formData
     }).then(res => res.json()).then(data =>{
-        console.log(data);
         trushed.click();
     });
 }
 let fileRestoreHandler = (e, option) =>{
     e.preventDefault()
     let formData = new FormData();
-    // console.log(option);
     id = option.getAttribute("thisid")
     formData.append("id", id)
     OptionCloser.click()
@@ -345,12 +342,10 @@ let folderDownload = (event, thisfolder) =>{
     // let form = document.createElement("form")
     // form.style.display = "none"
     // document.body.append(form)
-    console.log(folderPath);
     let formData = new FormData();
     formData.append("folderName", folderPath)
     let filename = folderPath.split("/");
     filename = filename[filename.length-1]
-    console.log(filename);
     formData.append("filename", filename)
     let ajax = new XMLHttpRequest()
     ajax.open("post", url+"downloadZip")
@@ -359,12 +354,10 @@ let folderDownload = (event, thisfolder) =>{
         if (ajax.readyState == XMLHttpRequest.DONE) {
             let a = document.createElement("a")
             a.style.display="none"
-            let blob = new Blob([ajax.response], {type: "octet/stream/"})
-            let url = URL.createObjectURL(blob)
-            a.setAttribute("href", url)
+            a.setAttribute("href", url+filename+".zip")
             a.download = "document.zip";
             document.body.append(a)
-            a.click()
+            a.click();
         }
     }
     ajax.responseType = "arraybuffer";

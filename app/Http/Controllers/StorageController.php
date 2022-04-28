@@ -25,7 +25,6 @@ class StorageController extends Controller
     {
         return MyStorage::onlyTrashed()->get();
     }
-
     public function deleteFile(Request $request)
     {
         if (MyStorage::where("fullPath", $request->filepath)->delete()) {
@@ -33,8 +32,6 @@ class StorageController extends Controller
         };
         return ["message" => "something error"];
     }
-
-    // create folder
     public function createFolder(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -61,7 +58,6 @@ class StorageController extends Controller
             return ["error" => $validator->messages()];
         }
     }
-
     public function store(Request $request)
     {
         $fullPath = $request->currentDir;
@@ -86,8 +82,6 @@ class StorageController extends Controller
 
         return "All File Inserted Successfully";
     }
-
-
     public function importantFile($id)
     {
         $data = MyStorage::find($id);
@@ -115,47 +109,26 @@ class StorageController extends Controller
         }
         return ["message" => "Data not found"];
     }
-
-
-        /**
-
-         * Display a listing of the resource.
-
-         *
-
-         * @return \Illuminate\Http\Response
-
-         */
-
     public function downloadZip(Request $request)
-        {
-            $folderpath = $request->folderName;
-            $zip = new ZipArchive();
-            $fileName = $request->filename.".zip";
+    {
+        $folderpath = $request->folderName;
+        $zip = new ZipArchive();
+        $fileName = $request->filename.".zip";
         if ($zip->open(public_path($fileName), ZipArchive::CREATE)== TRUE)
         {
-                $files = File::files(public_path('storage/'.$folderpath));
-                foreach ($files as $key => $value){
-                    $relativeName = basename($value);
-                    $zip->addFile($value, $relativeName);
-                }
-                $zip->close();
+            $files = File::files(public_path('storage/'.$folderpath));
+            foreach ($files as $key => $value){
+                $relativeName = basename($value);
+                $zip->addFile($value, $relativeName);
             }
-            response()->download(public_path($fileName));
-            // if (response()->download(public_path($fileName))) {
-            //     unlink(public_path($fileName));
-            // }
+            $zip->close();
         }
+        if (response()->download(public_path($fileName))) {
+            return ["message" => "Success"];
+        };
+        return ["error" => "Folder should be contain file"];
 
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    }
     public function fileRestore(Request $request)
     {
         $file = MyStorage::onlyTrashed()->where("id", $request->id)->restore();
@@ -163,24 +136,23 @@ class StorageController extends Controller
     }
     public function fileDeleteForever(Request $request)
     {
-        $folderOrFile =MyStorage::onlyTrashed()->find($request->id);
-        MyStorage::onlyTrashed()->where("dir_id", $request->id)->forceDelete();
+        $folderOrFile = MyStorage::onlyTrashed()->find($request->id);
+        $fullPath = trim($folderOrFile->fullPath, "/");
+        DB::table("directories")->where("dirName", $fullPath)->delete();
+        MyStorage::onlyTrashed()->where("dir_id", $request->id)->delete();
+        $folderOrFile->forceDelete();
         DB::table("storages")->where("dir_id", $request->id)->delete();
         MyStorage::onlyTrashed()->where("id", $request->id)->forceDelete();
         if ($folderOrFile && $folderOrFile->type == "folder") {
             File::deleteDirectory(public_path("storage/".$folderOrFile['fullPath']));
+            if (file_exists(public_path($folderOrFile['fullname'].".zip"))) {
+                unlink(public_path($folderOrFile['fullname'].".zip"));
+            }
         }else{
             unlink(public_path("storage/".$folderOrFile['fullPath']));
         }
         return $folderOrFile;
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //
