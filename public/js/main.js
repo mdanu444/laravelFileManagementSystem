@@ -12,6 +12,7 @@ let folderCreator = document.querySelector(".folderCreator");
 let filesHeading = document.querySelector(".filesHeading");
 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 let url = "http://localhost:8000/";
+let ajaxBaseLocation = "http://localhost:8000/mydrive/";
 let root = "Drive/"
 let rootId = 0;
 let trashSection = false;
@@ -93,7 +94,7 @@ fileUploader.onclick = (e) => {
     }
 
 
-    ajax.open("post", url + "fileUpload")
+    ajax.open("post", ajaxBaseLocation + "fileUpload")
     ajax.setRequestHeader('X-CSRF-TOKEN', csrfToken)
     ajax.send(formData)
     form.reset();
@@ -137,7 +138,7 @@ folderCreator.onclick = (e) => {
         formData.append("currentId", rootId);
 
 
-        ajax.open("post", url + "createFolder");
+        ajax.open("post", ajaxBaseLocation + "createFolder");
         ajax.onreadystatechange = function() {
             if (ajax.readyState == XMLHttpRequest.DONE) {
                 let dataObject = JSON.parse(ajax.response);
@@ -164,7 +165,7 @@ let content = document.querySelector(".content");
 
 let fetchFolderData = () => {
 
-    fetch(url + "getFolderData/" + rootId, {
+    fetch(ajaxBaseLocation + "getFolderData/" + rootId, {
         method: "get",
         headers: {
             'X-CSRF-TOKEN': csrfToken
@@ -217,7 +218,7 @@ function loadFilesAndFolder(dirDatadata) {
         content.innerHTML = "Loading...";
         let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
         let files;
-        fetch(url + "getfiles", {
+        fetch(ajaxBaseLocation + "getfiles", {
             headers: {
                 'X-CSRF-TOKEN': csrfToken
             }
@@ -305,7 +306,7 @@ let fileDeleteForeverHandler = (e, option) =>{
     id = option.getAttribute("thisid")
     formData.append("id", id)
     OptionCloser.click()
-    fetch(url + "fileDeleteForever", {
+    fetch(ajaxBaseLocation + "fileDeleteForever", {
         method: "post",
         headers: {
             'X-CSRF-TOKEN': csrfToken,
@@ -321,7 +322,7 @@ let fileRestoreHandler = (e, option) =>{
     id = option.getAttribute("thisid")
     formData.append("id", id)
     OptionCloser.click()
-    fetch(url + "fileRestore", {
+    fetch(ajaxBaseLocation + "fileRestore", {
         method: "post",
         headers: {
             'X-CSRF-TOKEN': csrfToken,
@@ -335,7 +336,7 @@ let fileRestoreHandler = (e, option) =>{
 
 let folderDownload = (event, thisfolder) =>{
     event.preventDefault()
-    let folderPath = thisfolder.getAttribute("href").replace(url+"storage", "")
+    let folderPath = thisfolder.getAttribute("href").replace(ajaxBaseLocation+"storage", "")
     folderPath = folderPath.replace(/^\/+|\/+$/g, "")
     // folderPath = folderPath.replace("/", "\\");
     OptionCloser.onclick()
@@ -516,7 +517,7 @@ let loadImportantFiles = () =>{
     content.innerHTML = "Loading...";
     let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
     let files;
-    fetch(url + "getimportantfiles", {
+    fetch(ajaxBaseLocation + "getimportantfiles", {
         headers: {
             'X-CSRF-TOKEN': csrfToken
         }
@@ -562,7 +563,7 @@ let loadTrushedFiles = () =>{
     content.innerHTML = "Loading...";
     let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
     let files;
-    fetch(url + "gettrashedfiles", {
+    fetch(ajaxBaseLocation + "gettrashedfiles", {
         headers: {
             'X-CSRF-TOKEN': csrfToken
         }
@@ -638,4 +639,77 @@ let activedesignhandler = ()=>{
     }
     importantSection && importantsBtn.classList.add("active")
     trashSection && trushed.classList.add("active")
+}
+
+let searchInput = document.querySelector("#searchInput");
+
+let mytimeout;
+let searchValue;
+let makeSearch = ()=>{
+    mytimeout = setTimeout(()=>{
+        searchValue = searchInput.value;
+        loadSearchedFiles()
+    }, 500)
+}
+
+
+searchInput.onkeyup = ()=>{
+    makeSearch();
+}
+searchInput.onkeydown = ()=>{
+    clearTimeout(mytimeout);
+}
+
+
+function loadSearchedFiles(){
+    content.innerHTML = "Loading...";
+    let extensions = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'doxs', 'xlsx'];
+    let files;
+
+    let formData = new FormData();
+    formData.append("search", searchValue)
+    fetch(ajaxBaseLocation + "search", {
+        method: "post",
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body:formData
+    }).then(res => res.json()).then(data => {
+        if (data.length == 0) {
+            content.innerHTML = "Empty"
+            return
+        }
+        files = data;
+        content.innerHTML = "";
+
+        for (let file in files) {
+
+            content.innerHTML += (`
+    <div fullPath="${files[file].fullPath}" class="file" directoryId = "${files[file].id}" type="${files[file].type}">
+
+    <div class="fileOption">
+            <div class="fileOptionMenuIcon" >
+                <span class="AllfileOption"><i class="fa fa-ellipsis-v"></i></span>
+            </div>
+            <div class="options"></div>
+        </div>
+        <img src="${url + extensions.indexOf(files[file].extension) ? "images/" +files[file].extension : 'images/other' }.png" alt="">
+        <div class="fileDescription">
+        <p class="filename">${files[file].fullname}</p>
+
+        </div>
+        ${files[file].importants == 1 ? "<div title='Important File' class='important'>i</div>" : ""}
+    </div>
+`)
+
+            // set current directoryId
+            let LoadedFiles = document.querySelectorAll(".file")
+            for (let file of LoadedFiles) {
+                file.children[0].onclick = (e) => {
+                    e.stopPropagation();
+                    handleFileFolderClickEvent(file)
+                }
+            }
+        }
+    })
 }

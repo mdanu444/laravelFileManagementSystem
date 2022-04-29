@@ -153,8 +153,9 @@ class StorageController extends Controller
         }
         return $folderOrFile;
     }
-    public function destroy($id)
+    public function search(Request $request)
     {
-        //
+        $search = $request->search;
+        return MyStorage::where("fullname", "like", $search)->get();
     }
 }

@@ -26,7 +26,7 @@
              </div>
         </a>
         <div class="search">
-            <input type="text" placeholder="search">
+            <input type="text" placeholder="search" id="searchInput">
         </div>
         <div class="user"><h3>Welcome Md. Anwar Hossain <a href="{{ url('/logout') }}"><i class="fa fa-power-off"></a></i></h3> </div>
     </nav>
